@@ -1,197 +1,205 @@
-# Vecino — Frontend
+# Vecino - Frontend
 
-![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat&logo=react&logoColor=white)
-![Figma](https://img.shields.io/badge/Diseño-Figma-F24E1E?style=flat&logo=figma&logoColor=white)
-![Vite](https://img.shields.io/badge/Bundler-Vite-646CFF?style=flat&logo=vite&logoColor=white)
-![License](https://img.shields.io/badge/Licencia-MIT-green?style=flat)
-
-Interfaz web del sistema **Vecino**, una plataforma de marketplace hiperlocal orientada a conectar comerciantes, emprendedores y consumidores dentro de una misma zona geográfica en ciudades colombianas.
-
----
+Interfaz web del sistema **Vecino**, una plataforma de marketplace hiperlocal para conectar comerciantes, emprendedores y compradores dentro de una misma zona geografica.
 
 ## Tabla de contenido
 
-- [Descripción general](#descripción-general)
-- [Tecnologías](#tecnologías)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Requisitos previos](#requisitos-previos)
-- [Instalación y configuración](#instalación-y-configuración)
+- [Descripcion general](#descripcion-general)
+- [Stack tecnico](#stack-tecnico)
+- [Arquitectura del proyecto](#arquitectura-del-proyecto)
+- [Instalacion](#instalacion)
 - [Variables de entorno](#variables-de-entorno)
-- [Ejecución](#ejecución)
-- [Módulos de la interfaz](#módulos-de-la-interfaz)
-- [Prototipos](#prototipos)
-- [Equipo de desarrollo](#equipo-de-desarrollo)
+- [Ejecucion](#ejecucion)
+- [Autenticacion con Supabase](#autenticacion-con-supabase)
+- [Base de datos y esquema](#base-de-datos-y-esquema)
+- [Guia de diseno visual](#guia-de-diseno-visual)
+- [Referencias de mockups](#referencias-de-mockups)
 
----
+## Descripcion general
 
-## Descripción general
+Este frontend esta construido con **Next.js 16** (App Router) y **Tailwind CSS v4**. El modulo inicial desarrollado es autenticacion:
 
-El frontend de Vecino es una Single Page Application (SPA) construida con React, diseñada para ser completamente responsiva y accesible desde dispositivos móviles y de escritorio. La interfaz consume la API RESTful del backend mediante peticiones HTTP y gestiona el estado de la aplicación de forma eficiente.
+- Inicio de sesion
+- Registro de usuario
+- Recuperacion de contrasena
+- Actualizacion de contrasena por enlace de recuperacion
 
-La experiencia de usuario fue diseñada en **Figma y Stitch**, garantizando una propuesta visual coherente, intuitiva y validada antes de su implementación.
+El sistema usa **Supabase Auth** para manejar cuentas y sesiones, y una tabla `public.perfiles` para almacenar el perfil base del usuario.
 
----
+## Stack tecnico
 
-## Tecnologías
-
-| Tecnología | Versión | Propósito |
+| Tecnologia | Version | Uso |
 |---|---|---|
-| React | 18.x | Librería principal de interfaz |
-| Vite | — | Bundler y entorno de desarrollo |
-| React Router | — | Navegación entre vistas |
-| Axios | — | Consumo de la API REST |
-| Context API / Redux | — | Gestión de estado global |
-| CSS Modules / Tailwind | — | Estilos y diseño responsivo |
-| Figma + Stitch | — | Prototipado de alta y baja fidelidad |
+| Next.js | 16.x | Framework principal |
+| React | 19.x | Capa de UI |
+| Tailwind CSS | 4.x | Sistema de estilos |
+| Supabase | SDK v2 | Auth + acceso a Postgres |
+| TypeScript | 5.x | Tipado estatico |
+| PostgreSQL | Supabase | Base de datos |
 
----
+## Arquitectura del proyecto
 
-## Estructura del proyecto
-
-```
-vecino-frontend/
-│
-├── public/                 # Archivos estáticos
-├── src/
-│   ├── assets/             # Imágenes, íconos y fuentes
-│   ├── components/         # Componentes reutilizables
-│   │   ├── common/         # Botones, inputs, modales, etc.
-│   │   ├── layout/         # Header, Footer, Navbar
-│   │   └── ui/             # Tarjetas, tablas, badges
-│   ├── pages/              # Vistas principales por módulo
-│   │   ├── Auth/           # Registro, login, recuperar contraseña
-│   │   ├── Negocios/       # Gestión de negocios
-│   │   ├── Productos/      # Catálogo y publicación
-│   │   ├── Pedidos/        # Carrito, pedidos, historial
-│   │   ├── Pagos/          # Pasarela de pagos
-│   │   ├── Resenas/        # Calificaciones y reseñas
-│   │   ├── Mapa/           # Módulo de geolocalización
-│   │   └── Admin/          # Panel de administración
-│   ├── services/           # Llamadas a la API (axios)
-│   ├── context/            # Contextos globales (AuthContext, etc.)
-│   ├── hooks/              # Custom hooks
-│   ├── utils/              # Funciones utilitarias
-│   ├── App.jsx             # Componente raíz y rutas
-│   └── main.jsx            # Punto de entrada
-│
-├── .env.example
-├── .gitignore
-├── package.json
-└── README.md
+```txt
+Software-Vecino-Frontend/
+|
+|- mockups/                         # Referencias visuales del proyecto
+|- scripts/
+|  |- supabase-setup.mjs            # Script para aplicar schema SQL
+|- src/
+|  |- app/
+|  |  |- (auth)/
+|  |  |  |- iniciar-sesion/page.tsx
+|  |  |  |- registro/page.tsx
+|  |  |  |- recuperar-contrasena/page.tsx
+|  |  |  |- actualizar-contrasena/page.tsx
+|  |  |- (app)/
+|  |  |  |- panel/page.tsx
+|  |  |- auth/confirm/route.ts      # Confirmacion y recuperacion de email
+|  |  |- layout.tsx
+|  |  |- page.tsx
+|  |  |- globals.css
+|  |- components/auth/              # Componentes reutilizables de auth
+|  |- lib/supabase/                 # Clientes browser/server/proxy
+|  |- proxy.ts                      # Proxy global (antes middleware)
+|- supabase/
+|  |- schema.sql                    # Tablas, trigger, RLS y politicas
+|- .env.example
+|- README-frontend.md
 ```
 
----
-
-## Requisitos previos
-
-- Node.js v18 o superior
-- npm v9 o superior
-- Backend de Vecino corriendo localmente o en servidor
-
----
-
-## Instalación y configuración
+## Instalacion
 
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/tu-usuario/vecino-frontend.git
-cd vecino-frontend
-
-# 2. Instalar dependencias
 npm install
-
-# 3. Configurar variables de entorno
-cp .env.example .env
-# Editar el archivo .env con los valores correspondientes
 ```
-
----
 
 ## Variables de entorno
 
-Crea un archivo `.env` en la raíz del proyecto con las siguientes variables:
+Crear archivo `.env.local`:
 
 ```env
-# URL del backend
-VITE_API_URL=http://localhost:3000/api
-
-# Clave pública de pasarela de pagos (si aplica)
-VITE_PAYMENT_PUBLIC_KEY=tu_clave_publica
+NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxx
+DATABASE_URL=postgresql://postgres:TU_CLAVE@db.TU-PROYECTO.supabase.co:5432/postgres
 ```
 
----
-
-## Ejecución
+## Ejecucion
 
 ```bash
-# Modo desarrollo
+# Desarrollo
 npm run dev
 
-# Compilar para producción
+# Build
 npm run build
 
-# Vista previa de producción
-npm run preview
+# Produccion local
+npm run start
 ```
 
-La aplicación quedará disponible en: `http://localhost:5173`
+## Autenticacion con Supabase
 
----
+Flujos implementados:
 
-## Módulos de la interfaz
+1. **Registro** (`/registro`)
+   - Crea usuario en Supabase Auth.
+   - Guarda metadatos `nombre_completo` y `tipo_cuenta`.
+   - Soporta confirmacion por correo si esta habilitada.
 
-| Módulo | Descripción |
-|---|---|
-| Autenticación | Registro, inicio de sesión y recuperación de contraseña |
-| Gestión de negocios | Crear, editar y administrar perfil del negocio |
-| Catálogo de productos | Publicar, editar y organizar productos por categoría |
-| Motor de búsqueda | Buscar y filtrar productos y negocios |
-| Carrito de compras | Gestión dinámica del carrito y confirmación de pedido |
-| Procesamiento de pedidos | Registro, seguimiento y estados del pedido |
-| Pasarela de pagos | Flujo de pago seguro en línea |
-| Calificaciones y reseñas | Valorar negocios y productos |
-| Geolocalización | Mapa interactivo de negocios cercanos |
-| Panel del comerciante | Dashboard con métricas y estadísticas |
-| Administración del sistema | Gestión de usuarios, negocios y contenido |
+2. **Login** (`/iniciar-sesion`)
+   - Inicio de sesion por email/contrasena.
+   - Botones OAuth (Google/Apple) listos para activarse en Supabase.
 
----
+3. **Recuperacion de contrasena** (`/recuperar-contrasena`)
+   - Envia correo de recuperacion.
+   - Redirige a `/auth/confirm` y luego a `/actualizar-contrasena`.
 
-## Prototipos
+4. **Actualizacion de contrasena** (`/actualizar-contrasena`)
+   - Permite definir nueva contrasena tras validar token de recovery.
 
-Los prototipos de alta fidelidad del sistema fueron desarrollados en **Stitch (Google)** y están disponibles en los siguientes enlaces:
+5. **Ruta protegida** (`/panel`)
+   - Exige sesion activa.
+   - Incluye cierre de sesion.
 
-| Módulo | Enlace |
-|---|---|
-| Registro | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=5029de78e95a4fff9cc618a5de60b19b |
-| Recuperación de contraseña | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=9a1d9805b4694778b56b23ee7779143a |
-| Inicio de sesión | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=3b6d59f5ce58437c9a610d6a59edf7fb |
-| Gestión de negocios | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=3351b102dcc142ce93e0ac6e34a9cefa |
-| Catálogo de productos | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=ca2eb6c7b003427fa7705572356d0e49 |
-| Motor de búsqueda | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=1c0a2fed1ee1474981b21275b5b48c2d |
-| Carrito de compras | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=cd1a3b7b159943b18f4c323d8d3d2c49 |
-| Registro de pedido | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=3665016fef804928a75840ad5d3d0b53 |
-| Confirmación de pedido | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=5d899728aff246e295c46157fba15713 |
-| Seguimiento de pedido | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=eeb3668d48244b848803284c7de30dc4 |
-| Pasarela de pagos | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=5d450a639b744aa19eae459a9c39afa2 |
-| Calificaciones | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=38abc243643d41a792f4f6d5b03daaf4 |
-| Reseñas | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=6933fa9772394162a9e77a37cc323dc9 |
-| Geolocalización | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=9426e73b54b34f6d9b9c9fca2d70ca16 |
-| Panel del comerciante | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=0673c7375ac04ca993a7ddad950d3931 |
-| Administración del sistema | https://stitch.withgoogle.com/preview/6944331621580144500?node-id=e3a17e63318543fd91220235a8d9fc8e |
+## Base de datos y esquema
 
----
+El proyecto incluye `supabase/schema.sql` con:
 
-## Equipo de desarrollo
+- Tipo enum `public.tipo_cuenta` (`comprador`, `vendedor`)
+- Tabla `public.perfiles`
+- Trigger `al_crear_usuario_auth` sobre `auth.users`
+- Funcion `public.crear_perfil_usuario()` para sincronizar perfil
+- Politicas RLS para acceso por propietario
 
-| Nombre | ID | Rol |
-|---|---|---|
-| Santiago José Barbosa Rivas | 100198965 | Product Owner |
-| Jerson Javier Ramírez Ricardo | 100123048 | Scrum Master |
-| Mario Alexander Avellaneda Buitrago | 100180605 | Desarrollador Backend |
-| José Luis Arias | 100143942 | Desarrollador Frontend y Testing |
+Aplicar esquema:
 
----
+```bash
+npm run db:setup
+```
 
-**Corporación Universitaria Iberoamericana**
-Facultad de Ingeniería — Programa de Ingeniería de Software
-Proyecto de Software — 2025
+> Requiere `DATABASE_URL` valida con acceso al Postgres de Supabase.
+
+## Guia de diseno visual
+
+Esta seccion define el sistema visual base para mantener consistencia en toda la plataforma.
+
+### 1) Direccion visual
+
+- Estilo: calido, cercano, comunitario.
+- Look and feel: superficies suaves, fondos crema y acento naranja tierra.
+- Interfaz: tarjetas redondeadas, formularios claros, CTA prominente con gradiente.
+
+### 2) Paleta de color (tokens)
+
+Definidos en `src/app/globals.css`:
+
+- `--vecino-bg`: `#f6f2ee` (fondo base)
+- `--vecino-bg-accent`: `#eaf3ea` (acento suave de fondo)
+- `--vecino-surface`: `#f4f4f4` (tarjetas)
+- `--vecino-surface-soft`: `#f0ede9` (inputs y bloques secundarios)
+- `--vecino-text`: `#2f2f2f` (texto principal)
+- `--vecino-text-muted`: `#6f6b67` (texto secundario)
+- `--vecino-brand`: `#af4a10` (marca)
+- `--vecino-brand-strong`: `#9c3f0c` (inicio de gradiente CTA)
+- `--vecino-brand-soft`: `#e29a70` (fin de gradiente CTA)
+- `--vecino-border`: `#ddd8d3` (bordes)
+- `--vecino-success`: `#b8e8c6` (estado positivo)
+- `--vecino-error`: `#ba2d2d` (estado de error)
+
+### 3) Tipografia
+
+- Display / titulos: `Sora`
+- Texto UI / formularios: `Nunito Sans`
+
+Reglas:
+
+- Titulo principal (auth): 48px aprox en desktop, 32px en mobile.
+- Subtitulo: 18px con color muted.
+- Labels de formulario: 16px semibold.
+- Inputs y botones: 18px.
+
+### 4) Componentes base
+
+- `AuthSurface`: contenedor principal de formularios (tarjeta central).
+- `AuthInput`: input con label, icono y estado de error.
+- `AuthPrimaryButton`: CTA principal con gradiente y estado loading.
+
+### 5) Interaccion y estados
+
+- Focus visible en inputs (borde brand).
+- Hover de botones con `brightness` suave.
+- Estados de error con color `vecino-error`.
+- Disabled con opacidad reducida y cursor bloqueado.
+
+### 6) Responsive
+
+- Mobile first.
+- Formularios centrados y legibles en ancho reducido.
+- Grids de registro colapsan de 2 columnas a 1 columna en pantallas pequenas.
+
+## Referencias de mockups
+
+- `mockups/login.png`
+- `mockups/registro.png`
+- `mockups/recuperacion-contraseña.png`
+
+Estas referencias se usan como base para color, estructura y tono visual del modulo de autenticacion.

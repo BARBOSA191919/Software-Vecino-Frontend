@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --vecino-bg: #f6f2ee;
+  --vecino-bg-accent: #eaf3ea;
+  --vecino-surface: #f4f4f4;
+  --vecino-surface-soft: #f0ede9;
+  --vecino-text: #2f2f2f;
+  --vecino-text-muted: #6f6b67;
+  --vecino-brand: #af4a10;
+  --vecino-brand-strong: #9c3f0c;
+  --vecino-brand-soft: #e29a70;
+  --vecino-border: #ddd8d3;
+  --vecino-success: #b8e8c6;
+  --vecino-error: #ba2d2d;
+}
+
+@theme inline {
+  --color-vecino-bg: var(--vecino-bg);
+  --color-vecino-bg-accent: var(--vecino-bg-accent);
+  --color-vecino-surface: var(--vecino-surface);
+  --color-vecino-surface-soft: var(--vecino-surface-soft);
+  --color-vecino-text: var(--vecino-text);
+  --color-vecino-text-muted: var(--vecino-text-muted);
+  --color-vecino-brand: var(--vecino-brand);
+  --color-vecino-brand-strong: var(--vecino-brand-strong);
+  --color-vecino-brand-soft: var(--vecino-brand-soft);
+  --color-vecino-border: var(--vecino-border);
+  --color-vecino-success: var(--vecino-success);
+  --color-vecino-error: var(--vecino-error);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+body {
+  background:
+    linear-gradient(90deg, transparent 70%, color-mix(in srgb, var(--vecino-bg-accent) 45%, white) 100%),
+    var(--vecino-bg);
+  color: var(--vecino-text);
+  font-family: var(--font-body), sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), sans-serif;
+}
+
+.vecino-card {
+  background-color: var(--vecino-surface);
+  border: 1px solid var(--vecino-border);
+  border-radius: 1rem;
+  box-shadow: 0 12px 30px rgb(53 40 31 / 5%);
+}
+
+.vecino-gradient {
+  background-image: linear-gradient(95deg, var(--vecino-brand-strong) 0%, var(--vecino-brand-soft) 100%);
+}
