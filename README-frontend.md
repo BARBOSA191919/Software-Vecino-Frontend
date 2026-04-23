@@ -24,7 +24,7 @@ Este frontend esta construido con **Next.js 16** (App Router) y **Tailwind CSS v
 - Recuperacion de contrasena
 - Actualizacion de contrasena por enlace de recuperacion
 
-El sistema usa **Supabase Auth** para manejar cuentas y sesiones, y una tabla `public.perfiles` para almacenar el perfil base del usuario.
+El sistema usa **Supabase Auth** para manejar cuentas y sesiones, y una tabla `public.usuarios` para almacenar el registro de usuarios y su rol.
 
 ## Stack tecnico
 
@@ -53,7 +53,9 @@ Software-Vecino-Frontend/
 |  |  |  |- recuperar-contrasena/page.tsx
 |  |  |  |- actualizar-contrasena/page.tsx
 |  |  |- (app)/
-|  |  |  |- panel/page.tsx
+|  |  |  |- perfil/page.tsx
+|  |  |  |- vendedor/page.tsx
+|  |  |  |- panel/page.tsx             # Redireccion por rol
 |  |  |- auth/confirm/route.ts      # Confirmacion y recuperacion de email
 |  |  |- layout.tsx
 |  |  |- page.tsx
@@ -102,12 +104,12 @@ Flujos implementados:
 
 1. **Registro** (`/registro`)
    - Crea usuario en Supabase Auth.
-   - Guarda metadatos `nombre_completo` y `tipo_cuenta`.
+   - Guarda metadatos `nombre_completo` y `rol`.
    - Soporta confirmacion por correo si esta habilitada.
 
 2. **Login** (`/iniciar-sesion`)
    - Inicio de sesion por email/contrasena.
-   - Botones OAuth (Google/Apple) listos para activarse en Supabase.
+   - Redireccion automatica por rol (`/perfil` o `/vendedor`).
 
 3. **Recuperacion de contrasena** (`/recuperar-contrasena`)
    - Envia correo de recuperacion.
@@ -116,18 +118,19 @@ Flujos implementados:
 4. **Actualizacion de contrasena** (`/actualizar-contrasena`)
    - Permite definir nueva contrasena tras validar token de recovery.
 
-5. **Ruta protegida** (`/panel`)
-   - Exige sesion activa.
-   - Incluye cierre de sesion.
+5. **Rutas protegidas** (`/perfil` y `/vendedor`)
+   - Exigen sesion activa.
+   - Aplican control de acceso por rol.
+   - Incluyen cierre de sesion.
 
 ## Base de datos y esquema
 
 El proyecto incluye `supabase/schema.sql` con:
 
-- Tipo enum `public.tipo_cuenta` (`comprador`, `vendedor`)
-- Tabla `public.perfiles`
-- Trigger `al_crear_usuario_auth` sobre `auth.users`
-- Funcion `public.crear_perfil_usuario()` para sincronizar perfil
+- Tipo enum `public.rol_usuario` (`usuario`, `vendedor`)
+- Tabla `public.usuarios`
+- Triggers `al_crear_usuario_auth` y `al_actualizar_usuario_auth` sobre `auth.users`
+- Funcion `public.sincronizar_usuario_auth()` para sincronizar usuarios
 - Politicas RLS para acceso por propietario
 
 Aplicar esquema:

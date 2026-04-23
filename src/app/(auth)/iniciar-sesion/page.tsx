@@ -39,21 +39,6 @@ export default function LoginPage() {
     router.refresh();
   };
 
-  const handleOauth = async (provider: "google" | "apple") => {
-    setError("");
-
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/auth/confirm?next=/panel`,
-      },
-    });
-
-    if (oauthError) {
-      setError("El acceso social no esta disponible en este momento.");
-    }
-  };
-
   return (
     <div className="space-y-5">
       <AuthSurface
@@ -109,25 +94,6 @@ export default function LoginPage() {
           </AuthPrimaryButton>
         </form>
 
-        <div className="mt-7 space-y-4">
-          <p className="text-center text-sm tracking-[0.2em] text-vecino-text-muted">O CONTINUA CON</p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              onClick={() => handleOauth("google")}
-              className="h-12 rounded-xl border border-vecino-border bg-vecino-surface-soft font-semibold text-vecino-text"
-            >
-              Google
-            </button>
-            <button
-              type="button"
-              onClick={() => handleOauth("apple")}
-              className="h-12 rounded-xl border border-vecino-border bg-vecino-surface-soft font-semibold text-vecino-text"
-            >
-              Apple
-            </button>
-          </div>
-        </div>
       </AuthSurface>
 
       <div className="flex justify-center gap-8 text-base font-semibold tracking-wide text-vecino-text-muted">

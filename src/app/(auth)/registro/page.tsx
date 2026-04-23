@@ -8,13 +8,13 @@ import { AuthInput } from "@/components/auth/auth-input";
 import { AuthPrimaryButton } from "@/components/auth/auth-primary-button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type TipoCuenta = "comprador" | "vendedor";
+type RolRegistro = "usuario" | "vendedor";
 
 export default function RegistroPage() {
   const router = useRouter();
   const supabase = createSupabaseBrowserClient();
 
-  const [tipoCuenta, setTipoCuenta] = useState<TipoCuenta>("comprador");
+  const [rol, setRol] = useState<RolRegistro>("usuario");
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,6 +24,11 @@ export default function RegistroPage() {
 
   const handleRegistro = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (loading) {
+      return;
+    }
+
     setError("");
     setExito("");
     setLoading(true);
@@ -35,7 +40,8 @@ export default function RegistroPage() {
         emailRedirectTo: `${window.location.origin}/auth/confirm?next=/panel`,
         data: {
           nombre_completo: nombre,
-          tipo_cuenta: tipoCuenta,
+          rol,
+          tipo_cuenta: rol === "vendedor" ? "vendedor" : "comprador",
         },
       },
     });
@@ -43,7 +49,11 @@ export default function RegistroPage() {
     setLoading(false);
 
     if (signUpError) {
-      setError("No fue posible crear la cuenta. Intenta nuevamente.");
+      if (signUpError.status === 429) {
+        setError("Demasiados intentos en poco tiempo. Espera un momento y vuelve a intentarlo.");
+      } else {
+        setError(signUpError.message || "No fue posible crear la cuenta. Intenta nuevamente.");
+      }
       return;
     }
 
@@ -67,30 +77,38 @@ export default function RegistroPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         <button
           type="button"
-          onClick={() => setTipoCuenta("comprador")}
-          className={`vecino-card p-7 text-left transition ${
-            tipoCuenta === "comprador" ? "border-vecino-brand" : "hover:border-vecino-brand-soft"
+          onClick={() => setRol("usuario")}
+          className={`vecino-card group flex min-h-[250px] cursor-pointer flex-col items-center justify-center p-6 text-center transition duration-200 hover:-translate-y-0.5 hover:border-vecino-brand-soft hover:ring-2 hover:ring-vecino-brand-soft/60 hover:shadow-[0_14px_28px_rgba(53,40,31,0.12)] ${
+            rol === "usuario"
+              ? "border-vecino-brand bg-[#fff7f2] shadow-[0_16px_30px_rgba(175,74,16,0.2)] ring-2 ring-vecino-brand"
+              : "hover:border-vecino-brand-soft"
           }`}
         >
-          <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-vecino-success text-vecino-text">
+          <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-vecino-success text-vecino-text transition group-hover:scale-105">
             <CircleUserRound size={22} />
           </span>
-          <h2 className="text-3xl font-semibold">Quiero comprar</h2>
-          <p className="mt-2 text-base text-vecino-text-muted">Explora tesoros locales y apoya a tus vecinos.</p>
+          <h2 className="text-[2rem] font-semibold leading-tight">Quiero comprar</h2>
+          <p className="mt-3 max-w-[320px] text-xl leading-8 text-vecino-text-muted">
+            Explora tesoros locales, apoya a tus vecinos y descubre lo mejor de tu comunidad.
+          </p>
         </button>
 
         <button
           type="button"
-          onClick={() => setTipoCuenta("vendedor")}
-          className={`vecino-card p-7 text-left transition ${
-            tipoCuenta === "vendedor" ? "border-vecino-brand" : "hover:border-vecino-brand-soft"
+          onClick={() => setRol("vendedor")}
+          className={`vecino-card group flex min-h-[250px] cursor-pointer flex-col items-center justify-center p-6 text-center transition duration-200 hover:-translate-y-0.5 hover:border-vecino-brand-soft hover:ring-2 hover:ring-vecino-brand-soft/60 hover:shadow-[0_14px_28px_rgba(53,40,31,0.12)] ${
+            rol === "vendedor"
+              ? "border-vecino-brand bg-[#fff7f2] shadow-[0_16px_30px_rgba(175,74,16,0.2)] ring-2 ring-vecino-brand"
+              : "hover:border-vecino-brand-soft"
           }`}
         >
-          <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-200 text-vecino-text">
+          <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-200 text-vecino-text transition group-hover:scale-105">
             <Store size={22} />
           </span>
-          <h2 className="text-3xl font-semibold">Quiero vender</h2>
-          <p className="mt-2 text-base text-vecino-text-muted">Comparte tus productos y haz crecer tu negocio local.</p>
+          <h2 className="text-[2rem] font-semibold leading-tight">Quiero vender</h2>
+          <p className="mt-3 max-w-[320px] text-xl leading-8 text-vecino-text-muted">
+            Abre tu escaparate digital, comparte tus productos y haz crecer tu negocio local.
+          </p>
         </button>
       </div>
 
@@ -117,6 +135,10 @@ export default function RegistroPage() {
               required
             />
           </div>
+
+          <p className="rounded-xl bg-vecino-surface-soft px-4 py-3 text-sm font-semibold text-vecino-text-muted">
+            Rol seleccionado: <span className="capitalize text-vecino-brand">{rol}</span>
+          </p>
 
           <AuthInput
             label="Contrasena"
