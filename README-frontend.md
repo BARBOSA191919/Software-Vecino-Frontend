@@ -11,7 +11,7 @@ Interfaz web del sistema **Vecino**, una plataforma de marketplace hiperlocal pa
 - [Variables de entorno](#variables-de-entorno)
 - [Ejecucion](#ejecucion)
 - [Autenticacion con Supabase](#autenticacion-con-supabase)
-- [Base de datos y esquema](#base-de-datos-y-esquema)
+- [Interfaces y flujos implementados](#interfaces-y-flujos-implementados)
 - [Guia de diseno visual](#guia-de-diseno-visual)
 - [Referencias de mockups](#referencias-de-mockups)
 
@@ -43,8 +43,6 @@ El sistema usa **Supabase Auth** para manejar cuentas y sesiones, y una tabla `p
 Software-Vecino-Frontend/
 |
 |- mockups/                         # Referencias visuales del proyecto
-|- scripts/
-|  |- supabase-setup.mjs            # Script para aplicar schema SQL
 |- src/
 |  |- app/
 |  |  |- (auth)/
@@ -63,8 +61,6 @@ Software-Vecino-Frontend/
 |  |- components/auth/              # Componentes reutilizables de auth
 |  |- lib/supabase/                 # Clientes browser/server/proxy
 |  |- proxy.ts                      # Proxy global (antes middleware)
-|- supabase/
-|  |- schema.sql                    # Tablas, trigger, RLS y politicas
 |- .env.example
 |- README-frontend.md
 ```
@@ -82,7 +78,6 @@ Crear archivo `.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxxxxxxxx
-DATABASE_URL=postgresql://postgres:TU_CLAVE@db.TU-PROYECTO.supabase.co:5432/postgres
 ```
 
 ## Ejecucion
@@ -123,23 +118,36 @@ Flujos implementados:
    - Aplican control de acceso por rol.
    - Incluyen cierre de sesion.
 
-## Base de datos y esquema
+## Interfaces y flujos implementados
 
-El proyecto incluye `supabase/schema.sql` con:
+### Interfaces implementadas
 
-- Tipo enum `public.rol_usuario` (`usuario`, `vendedor`)
-- Tabla `public.usuarios`
-- Triggers `al_crear_usuario_auth` y `al_actualizar_usuario_auth` sobre `auth.users`
-- Funcion `public.sincronizar_usuario_auth()` para sincronizar usuarios
-- Politicas RLS para acceso por propietario
+- `/registro`: alta de cuenta con seleccion de rol (`usuario` o `vendedor`).
+- `/iniciar-sesion`: autenticacion por correo y contrasena.
+- `/recuperar-contrasena`: envio de enlace de recuperacion.
+- `/actualizar-contrasena`: actualizacion de contrasena con token valido.
+- `/panel`: redireccion automatica por rol despues de autenticar.
+- `/perfil`: vista protegida para rol `usuario`.
+- `/vendedor`: vista protegida para rol `vendedor`.
 
-Aplicar esquema:
+### Flujo principal del usuario
 
-```bash
-npm run db:setup
-```
+1. El usuario se registra o inicia sesion.
+2. El sistema autentica con Supabase Auth.
+3. Se identifica el rol del usuario.
+4. El sistema redirige a `/perfil` o `/vendedor`.
+5. El usuario puede cerrar sesion desde su panel.
 
-> Requiere `DATABASE_URL` valida con acceso al Postgres de Supabase.
+### Contrato de API consumido
+
+Cuando el backend local esta disponible, la documentacion OpenAPI/Swagger se consulta en:
+
+- `http://localhost:4000/api-docs`
+- `http://localhost:4000/api-docs.json`
+
+## Base de datos
+
+La definicion de esquema SQL y scripts de aprovisionamiento de base de datos se mantiene en el repositorio de backend para conservar separacion clara entre frontend y backend.
 
 ## Guia de diseno visual
 
