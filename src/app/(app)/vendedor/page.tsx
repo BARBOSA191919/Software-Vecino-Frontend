@@ -1,4 +1,4 @@
-import { Clock3, MapPin, Store } from "lucide-react";
+import { Clock3, MapPin, Store, PlusCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 import { PanelShell } from "@/components/dashboard/panel-shell";
 import { obtenerUsuarioActual } from "@/lib/auth/usuario";
@@ -34,6 +34,13 @@ export default async function VendedorPage() {
 
   return (
     <PanelShell rol="vendedor" titulo="Perfil del Negocio" vistaActiva="vendedor">
+      <div className="flex justify-end mb-6">
+  <a href="/vendedor/negocio/crear" className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-5 py-3 rounded-xl transition">
+    <PlusCircle size={20} />
+    Crear negocio
+  </a>
+</div>
+     
       <div className="grid gap-6 2xl:grid-cols-[1.4fr_0.8fr]">
         <section className="vecino-card p-6 sm:p-8">
           <p className="text-base text-vecino-text-muted">Configuracion Activa</p>
