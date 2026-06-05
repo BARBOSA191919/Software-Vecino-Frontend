@@ -15,7 +15,7 @@ export default async function NegocioPerfilPage({ params }: { params: Promise<{ 
 
   if (!negocioRes.success || !negocioRes.data) {
     return (
-      <PanelShell rol={user ? 'usuario' : 'invitado'} titulo="Error" vistaActiva="catalogo">
+      <PanelShell rol="usuario" titulo="Error" vistaActiva="catalogo">
         <div className="p-8 text-center text-red-600 font-bold">
           Error al cargar el negocio: {JSON.stringify(negocioRes)} <br/>
           ID intentado: {id}
@@ -29,7 +29,7 @@ export default async function NegocioPerfilPage({ params }: { params: Promise<{ 
   const resenas = resenasRes.success ? resenasRes.data : []
 
   return (
-    <PanelShell rol={user ? 'usuario' : 'invitado'} titulo="Perfil del Negocio" vistaActiva="catalogo">
+    <PanelShell rol="usuario" titulo="Perfil del Negocio" vistaActiva="catalogo">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="vecino-card overflow-hidden">
           {negocio.imagen_url && (
