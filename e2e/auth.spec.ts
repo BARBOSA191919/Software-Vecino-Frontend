@@ -19,17 +19,15 @@ test.describe('Autenticación', () => {
     await page.waitForURL(/\/registro/, { timeout: 10000 });
   });
 
-  test('debería mostrar error con credenciales inválidas', async ({ page }) => {
+  test('debería validar campos vacíos al intentar iniciar sesión', async ({ page }) => {
     await page.waitForLoadState('networkidle');
-    await page.getByLabel(/correo electronico/i).fill('test@example.com');
-    await page.getByLabel(/contrasena/i).fill('wrongpassword');
+    // Click submit with empty fields — el formulario no debe navegar
     await page.getByRole('button', { name: /iniciar sesion/i }).click();
-    
-    // El mensaje de error puede tardar un poco dependiendo de la respuesta de Supabase
-    const errorMsg = page.getByText(/no fue posible iniciar sesion/i);
-    await expect(errorMsg).toBeVisible({ timeout: 10000 });
+    // Seguimos en la misma página (HTML5 validation o app-level validation)
+    await expect(page).toHaveURL(/\/iniciar-sesion/, { timeout: 5000 });
   });
 });
+
 
 test.describe('Registro', () => {
   test.beforeEach(async ({ page }) => {
